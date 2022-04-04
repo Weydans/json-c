@@ -19,7 +19,7 @@ struct JSON_NODE
 struct JSON_FINAL_VALUE
 {
 	json_final_value_type 	type;
-	json_final_value_value 	value;
+	json_value 				value;
 };
 
 struct JSON_PAIR

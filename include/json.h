@@ -12,8 +12,7 @@ typedef enum json_pair_type json_pair_type;
 typedef enum json_final_value_type json_final_value_type;
 
 typedef union json_node_value json_node_value;
-typedef union json_pair_value json_pair_value;
-typedef union json_final_value_value json_final_value_value;
+typedef union json_value json_value;
 
 #define JSON_NULL 		"null"
 #define JSON_TRUE 		"true"
@@ -52,14 +51,14 @@ enum json_final_value_type
 	json_final_value_type_undefined
 };
 
-union json_final_value_value
+union json_value
 {
-	char 				c;
-	int					i;
-	float 				f;
-	double 				d;
-	char* 				s;
-	JSON_NODE*			jn;
+	char 		c;
+	int			i;
+	float 		f;
+	double 		d;
+	char* 		s;
+	JSON_NODE*	jn;
 };
 
 enum json_pair_type
@@ -74,16 +73,6 @@ enum json_pair_type
 	json_pair_type_null,
 	json_pair_type_bool,
 	json_pair_type_undefined
-};
-
-union json_pair_value
-{
-	char 				c;
-	int					i;
-	float 				f;
-	double 				d;
-	char* 				s;
-	JSON_NODE*			jn;
 };
 
 JSON_NODE* json_node_new ( json_type type);
