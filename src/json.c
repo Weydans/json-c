@@ -1,86 +1,190 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <math.h>
 #include "../include/json.h"
 
-struct JSON 
+#define JSON_MASK_INTEGER 	"%lld"
+#define JSON_MASK_DOUBLE	"%.25Lf"
+#define JSON_MASK_BOOL		"%s"
+#define JSON_MASK_CHAR 		"\"%c\""
+#define JSON_MASK_STR 		"\"%s\""
+
+#define JSON_DATA_TRUE 		"true"
+#define JSON_DATA_FALSE		"false"
+
+typedef union json_data_data json_data_data;
+
+enum json_data_type
 {
-	json_type type;
-	JSON_NODE* value;
+	json_data_type_integer,
+	json_data_type_char,
+	json_data_type_str,
+	json_data_type_bool,
+	json_data_type_double
 };
 
-struct JSON_NODE
+union json_data_data 
 {
-	json_node_type type;
-	json_node_value* value;
-	JSON_NODE* prev;
-	JSON_NODE* next;
+	long long int	data_integer;
+	long double		data_double;
+	char 			data_char;
+	char*			data_str;
+	char			data_bool;
 };
 
-struct JSON_FINAL_VALUE
+struct JSON_DATA 
 {
-	json_final_value_type 	type;
-	json_value 				value;
+	enum json_data_type type;
+	json_data_data* data;
+	JSON_DATA* prev;
+	JSON_DATA* next;
 };
 
-struct JSON_PAIR
+JSON_DATA* json_data_new ()
 {
-	json_pair_type 		type;
-	char* 				key;
-	JSON_FINAL_VALUE 	value;
-};
+	JSON_DATA* data = ( JSON_DATA* ) calloc( 1, sizeof( JSON_DATA ) );
+	data->data = ( json_data_data* ) calloc( 1, sizeof( json_data_data ) );
 
-JSON_NODE* json_node_new ( json_type type)
-{
-	JSON_NODE* node = NULL;
-
-	node = ( JSON_NODE* ) calloc( 1, sizeof( JSON_NODE ) );
-	printf( "Json_node created\n" );
-
-	node->type = type == json_object ? json_node_type_pair : json_node_type_final_value;
-	node->value = NULL;
-
-	return node;
+	return data;
 }
 
-void json_node_destroy ( JSON_NODE** node )
+void json_data_destroy ( JSON_DATA** data )
 {
-	if ( *node != NULL )
+	if ( *data != NULL )
 	{
-		free( *node );
-		node = NULL;
-		printf( "Json_node destroyed\n" );
-	}
-}
-
-JSON* json_new ( const json_type type )
-{
-	JSON* json = NULL;
-	
-	json = ( JSON* ) calloc( 1, sizeof( JSON ) );
-	printf( "Json created\n" );
-	
-	json->type = type;
-	json->value = json_node_new( type ); 
-
-	return json;
-}
-
-void json_destroy ( JSON** json )
-{
-	if ( *json != NULL )
-	{
-		if ( ( *json )->value != NULL )
+		if ( ( *data )->data != NULL )
 		{
-			json_node_destroy( &( *json )->value );
+			free( ( *data )->data );
 		}
 
-		free( *json );
-		json = NULL;
-		printf( "Json destroyed\n" );
+		free( *data );
+		data = NULL;
 	}
 }
 
-void json_object_add_str ( JSON* json, char* key, char* value )
+void json_data_add_char ( JSON_DATA* data, char charactere )
 {
+	data->type = json_data_type_char;
+	data->data->data_char = charactere;
+}
+
+void json_data_add_integer ( JSON_DATA* data, long long int data_integer )
+{
+	data->type = json_data_type_integer;
+	data->data->data_integer = data_integer;
+}
+
+void json_data_add_double ( JSON_DATA* data, long double data_double )
+{
+	data->type = json_data_type_double;
+	data->data->data_double = data_double;
+}
+
+void json_data_add_str ( JSON_DATA* data, char* data_str )
+{
+	data->type = json_data_type_str;
+	data->data->data_str = data_str;
+}
+
+void json_data_add_bool ( JSON_DATA* data, json_data_bool data_bool )
+{
+	data->type = json_data_type_bool;
+	data->data->data_bool = data_bool;
+}
+
+int get_number_of_digits_on_integer ( long long int number )
+{
+	int i; 
+	for ( i = 0; number > 0; number /= 10, i++ ); 
+	return i;
+}
+
+int get_number_of_digits_on_double ( long double number )
+{
+	long long int integer_part 	= ( long long int ) number;
+	long double decimal_part 	= number - integer_part;
+	int i = get_number_of_digits_on_integer( integer_part ); 
+
+	for ( i = ++i; decimal_part > 0; i++ )
+	{
+		integer_part = ( long long int ) decimal_part;
+		decimal_part = decimal_part - integer_part;
+		decimal_part *= 10;
+	}
+
+	return i;
+}
+
+static char* json_data_char_get_str ( JSON_DATA* data )
+{
+	char* buffer = ( char* ) calloc( strlen( JSON_MASK_CHAR ) + strlen( "\0" ), sizeof( char ) );
+	sprintf( buffer, JSON_MASK_CHAR, data->data->data_char );
+	return buffer;
+}
+
+static char* json_data_integer_get_str ( JSON_DATA* data )
+{
+	char* buffer = ( char* ) calloc( strlen( JSON_MASK_INTEGER ) + get_number_of_digits_on_integer( data->data->data_integer ), sizeof( char ) );
+	sprintf( buffer, JSON_MASK_INTEGER, data->data->data_integer );
+	return buffer;
+}
+
+static char* json_data_double_get_str ( JSON_DATA* data )
+{
+	char* buffer = ( char* ) calloc( strlen( JSON_MASK_DOUBLE ) + get_number_of_digits_on_double( data->data->data_double ), sizeof( char ) );
+	sprintf( buffer, JSON_MASK_DOUBLE, data->data->data_double );
+	return buffer;
+}
+
+static char* json_data_str_get_str ( JSON_DATA* data )
+{
+	char* buffer = ( char* ) calloc( strlen( JSON_MASK_STR ) + strlen( data->data->data_str ), sizeof( char ) );
+	sprintf( buffer, JSON_MASK_STR, data->data->data_str );
+	return buffer;
+}
+
+static char* json_data_bool_get_str ( JSON_DATA* data )
+{
+	char* buffer = ( char* ) calloc( strlen( JSON_MASK_BOOL ) + strlen( data->data->data_bool ? JSON_DATA_TRUE : JSON_DATA_FALSE ), sizeof( char ) );
+	sprintf( buffer, JSON_MASK_BOOL, ( data->data->data_bool ? JSON_DATA_TRUE : JSON_DATA_FALSE ) );
+	return buffer;
+}
+
+char* json_data_to_string ( JSON_DATA* data )
+{
+	char* buffer = NULL;
+
+	switch ( data->type )
+	{
+		case json_data_type_char:
+			buffer = json_data_char_get_str( data );
+			break;
+		
+		case json_data_type_integer:
+			buffer = json_data_integer_get_str( data );
+			break;
+
+		case json_data_type_double:
+			buffer = json_data_double_get_str( data );
+			break;
+
+		case json_data_type_str:
+			buffer = json_data_str_get_str( data );
+			break;
+
+		case json_data_type_bool:
+			buffer = json_data_bool_get_str( data );
+			break;
+	}
+
+	return buffer;
+}
+
+void json_data_print ( JSON_DATA* data )
+{
+	char* data_str = json_data_to_string( data );
+	printf( "%s\n", data_str );
+	free( data_str );
 }
 

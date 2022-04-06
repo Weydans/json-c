@@ -5,13 +5,16 @@
 
 int main ( int argc, char* argv[] )
 {
-	printf( "Hello World!\n" );
+	JSON_DATA* data = json_data_new();
 
-	JSON* pessoa = json_new( json_object );
-
-	json_object_add_str( pessoa, "nome", "Weydans Barros" );
-
-	json_destroy( &pessoa );
+	json_data_add_char( data, 'a' );
+	json_data_add_integer( data, 1234567890123456789 );
+	json_data_add_str( data, "O rato roeu a roupa do rei de Roma." );
+	json_data_add_double( data, 112.1234567890123456 );
+	json_data_add_bool( data, json_data_true );
+	
+	json_data_print( data );
+	json_data_destroy( &data );
 	
 	return 0;
 }

@@ -1,85 +1,25 @@
 #ifndef _JSON_H_
 #define _JSON_H_
 
-typedef struct JSON JSON;
-typedef struct JSON_NODE JSON_NODE;
-typedef struct JSON_PAIR JSON_PAIR;
-typedef struct JSON_FINAL_VALUE JSON_FINAL_VALUE;
-
-typedef enum json_type json_type;
-typedef enum json_node_type json_node_type;
-typedef enum json_pair_type json_pair_type;
-typedef enum json_final_value_type json_final_value_type;
-
-typedef union json_node_value json_node_value;
-typedef union json_value json_value;
-
-#define JSON_NULL 		"null"
-#define JSON_TRUE 		"true"
-#define JSON_FALSE 		"false"
-#define JSON_UNDEFINE	"undefine"
-
-enum json_type 
+typedef enum 
 {
-	json_object,
-	json_list
-};
+	json_data_false = 0,
+	json_data_true	= 1
+} json_data_bool;
 
-enum json_node_type
-{
-	json_node_type_pair,
-	json_node_type_final_value
-};
+typedef struct JSON_DATA JSON_DATA;
 
-union json_node_value
-{
-	JSON_PAIR* 			json_pair;
-	JSON_FINAL_VALUE*	json_final_value;
-};
+JSON_DATA* json_data_new ();
+void json_data_destroy ( JSON_DATA** data );
 
-enum json_final_value_type
-{
-	json_final_value_type_char,
-	json_final_value_type_int,
-	json_final_value_type_float,
-	json_final_value_type_double,
-	json_final_value_type_str,
-	json_final_value_type_json_object,
-	json_final_value_type_json_list,
-	json_final_value_type_null,
-	json_final_value_type_bool,
-	json_final_value_type_undefined
-};
+void json_data_add_char ( JSON_DATA* data, char charactere );
+void json_data_add_integer ( JSON_DATA* data, long long int data_integer );
+void json_data_add_double ( JSON_DATA* data, long double data_double );
+void json_data_add_str ( JSON_DATA* data, char* data_str );
+void json_data_add_bool ( JSON_DATA* data, json_data_bool data_bool );
 
-union json_value
-{
-	char 		c;
-	int			i;
-	float 		f;
-	double 		d;
-	char* 		s;
-	JSON_NODE*	jn;
-};
-
-enum json_pair_type
-{
-	json_pair_type_char,
-	json_pair_type_int,
-	json_pair_type_float,
-	json_pair_type_double,
-	json_pair_type_str,
-	json_pair_type_json_object,
-	json_pair_type_json_list,
-	json_pair_type_null,
-	json_pair_type_bool,
-	json_pair_type_undefined
-};
-
-JSON_NODE* json_node_new ( json_type type);
-void json_node_destroy ( JSON_NODE** node );
-JSON* json_new ( const json_type type );
-void json_destroy ( JSON** json );
-void json_object_add_str ( JSON* json, char* key, char* value );
+char* json_data_to_string ( JSON_DATA* data );
+void json_data_print ( JSON_DATA* data );
 
 #endif
 
