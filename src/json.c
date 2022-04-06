@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
+#include <stdbool.h>
 #include "../include/json.h"
 
 #define JSON_MASK_INTEGER 	"%lld"
@@ -30,7 +30,7 @@ union json_data_data
 	long double		data_double;
 	char 			data_char;
 	char*			data_str;
-	char			data_bool;
+	bool			data_bool;
 };
 
 struct JSON_DATA 
@@ -87,7 +87,7 @@ void json_data_add_str ( JSON_DATA* data, char* data_str )
 	data->data->data_str = data_str;
 }
 
-void json_data_add_bool ( JSON_DATA* data, json_data_bool data_bool )
+void json_data_add_bool ( JSON_DATA* data, bool data_bool )
 {
 	data->type = json_data_type_bool;
 	data->data->data_bool = data_bool;
@@ -104,12 +104,12 @@ int get_number_of_digits_on_double ( long double number )
 {
 	long long int integer_part 	= ( long long int ) number;
 	long double decimal_part 	= number - integer_part;
-	int i = get_number_of_digits_on_integer( integer_part ); 
+	int i 						= get_number_of_digits_on_integer( integer_part ); 
 
 	for ( i = ++i; decimal_part > 0; i++ )
 	{
-		integer_part = ( long long int ) decimal_part;
-		decimal_part = decimal_part - integer_part;
+		integer_part  = ( long long int ) decimal_part;
+		decimal_part  = decimal_part - integer_part;
 		decimal_part *= 10;
 	}
 
@@ -118,36 +118,56 @@ int get_number_of_digits_on_double ( long double number )
 
 static char* json_data_char_get_str ( JSON_DATA* data )
 {
-	char* buffer = ( char* ) calloc( strlen( JSON_MASK_CHAR ) + strlen( "\0" ), sizeof( char ) );
+	size_t num_members = strlen( JSON_MASK_CHAR ) + strlen( "\0" );
+
+	char* buffer = ( char* ) calloc( num_members, sizeof( char ) );
+	
 	sprintf( buffer, JSON_MASK_CHAR, data->data->data_char );
+
 	return buffer;
 }
 
 static char* json_data_integer_get_str ( JSON_DATA* data )
 {
-	char* buffer = ( char* ) calloc( strlen( JSON_MASK_INTEGER ) + get_number_of_digits_on_integer( data->data->data_integer ), sizeof( char ) );
+	size_t num_members = strlen( JSON_MASK_INTEGER ) + get_number_of_digits_on_integer( data->data->data_integer );
+
+	char* buffer = ( char* ) calloc( num_members, sizeof( char ) );
+
 	sprintf( buffer, JSON_MASK_INTEGER, data->data->data_integer );
+	
 	return buffer;
 }
 
 static char* json_data_double_get_str ( JSON_DATA* data )
 {
-	char* buffer = ( char* ) calloc( strlen( JSON_MASK_DOUBLE ) + get_number_of_digits_on_double( data->data->data_double ), sizeof( char ) );
+	size_t num_members = strlen( JSON_MASK_DOUBLE ) + get_number_of_digits_on_double( data->data->data_double );
+
+	char* buffer = ( char* ) calloc( num_members, sizeof( char ) );
+	
 	sprintf( buffer, JSON_MASK_DOUBLE, data->data->data_double );
+	
 	return buffer;
 }
 
 static char* json_data_str_get_str ( JSON_DATA* data )
 {
-	char* buffer = ( char* ) calloc( strlen( JSON_MASK_STR ) + strlen( data->data->data_str ), sizeof( char ) );
+	size_t num_members = strlen( JSON_MASK_STR ) + strlen( data->data->data_str );
+
+	char* buffer = ( char* ) calloc( num_members, sizeof( char ) );
+	
 	sprintf( buffer, JSON_MASK_STR, data->data->data_str );
+	
 	return buffer;
 }
 
 static char* json_data_bool_get_str ( JSON_DATA* data )
 {
-	char* buffer = ( char* ) calloc( strlen( JSON_MASK_BOOL ) + strlen( data->data->data_bool ? JSON_DATA_TRUE : JSON_DATA_FALSE ), sizeof( char ) );
+	size_t num_members = strlen( JSON_MASK_BOOL ) + strlen( data->data->data_bool ? JSON_DATA_TRUE : JSON_DATA_FALSE );
+
+	char* buffer = ( char* ) calloc( num_members, sizeof( char ) );
+	
 	sprintf( buffer, JSON_MASK_BOOL, ( data->data->data_bool ? JSON_DATA_TRUE : JSON_DATA_FALSE ) );
+	
 	return buffer;
 }
 
@@ -184,7 +204,9 @@ char* json_data_to_string ( JSON_DATA* data )
 void json_data_print ( JSON_DATA* data )
 {
 	char* data_str = json_data_to_string( data );
+
 	printf( "%s\n", data_str );
+	
 	free( data_str );
 }
 
