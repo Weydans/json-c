@@ -53,8 +53,6 @@ JSON_DATA* json_data_new ()
 
 void json_data_destroy ( JSON_DATA** data )
 {
-	if ( *data == NULL ) return;
-
 	json_data_destroy_all( *data );
 	
 	data = NULL;
@@ -124,21 +122,14 @@ JSON_DATA* json_data_get_last ( JSON_DATA* json_data )
 {
 	JSON_DATA* last = json_data;
 
-	while ( last->next )
-	{
-		last = last->next;
-	}
+	while ( last->next ) last = last->next;
 
 	return last;
 }
 
 void json_data_add ( JSON_DATA* json_data, void* data, json_data_type type )
 {
-
-	if ( json_data == NULL ) 
-	{
-		json_data = json_data_new();
-	}
+	if ( json_data == NULL ) json_data = json_data_new();
 
 	if ( json_data->data == NULL )
 	{
@@ -335,7 +326,7 @@ char* json_data_list_to_string ( JSON_DATA* data, bool beautify )
 
 	if ( beautify )
 	{
-		list_str = realloc( list_str, strlen( list_str ) + 1 + strlen( "\n" ) + 1 );
+		list_str = realloc( list_str, strlen( list_str ) + 1 + strlen( "\n\t" ) + 1 );
 		strcat( list_str, "\n\t" );
 	}
 
