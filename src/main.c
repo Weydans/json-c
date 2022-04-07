@@ -15,10 +15,8 @@ int main ( int argc, char* argv[] )
 	json_data_add_char( data, 'A' );
 	json_data_add_bool( data, false );
 	
-	char* str = json_data_list_to_string( data, true );
-	puts( str );
+	json_data_list_dump( data );
 
-	free( str );
 	json_data_destroy( &data );
 	
 	return 0;

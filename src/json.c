@@ -357,3 +357,12 @@ void json_data_print ( JSON_DATA* data )
 	free( data_str );
 }
 
+void json_data_list_dump ( JSON_DATA* data )
+{
+	char* data_str = json_data_list_to_string( data, true );
+
+	printf( "%s\n", data_str );
+	
+	free( data_str );
+}
+

@@ -15,6 +15,7 @@ void json_data_add_bool ( JSON_DATA* data, bool data_bool );
 char* json_data_to_string ( JSON_DATA* data );
 char* json_data_list_to_string ( JSON_DATA* data, bool beautify );
 void json_data_print ( JSON_DATA* data );
+void json_data_list_dump ( JSON_DATA* data );
 
 #endif
 
