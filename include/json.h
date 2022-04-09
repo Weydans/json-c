@@ -2,7 +2,16 @@
 #define _JSON_H_
 
 typedef struct JSON_DATA JSON_DATA;
+typedef struct JSON_MAP JSON_MAP;
 
+JSON_MAP* json_map_new ();
+void json_map_destroy ( JSON_MAP** map );
+
+void json_map_add_list( JSON_MAP* map, char* key, JSON_DATA* data );
+void json_map_dump( JSON_MAP* map );
+
+// ============================================
+// JSON_DATA
 JSON_DATA* json_data_new ();
 void json_data_destroy ( JSON_DATA** data );
 

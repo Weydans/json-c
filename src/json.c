@@ -22,16 +22,8 @@ enum json_data_type
 	json_data_type_char,
 	json_data_type_str,
 	json_data_type_bool,
-	json_data_type_double
-};
-
-union json_data_data 
-{
-	long long int	data_integer;
-	long double		data_double;
-	char 			data_char;
-	char*			data_str;
-	bool			data_bool;
+	json_data_type_double,
+	json_data_type_list
 };
 
 struct JSON_DATA 
@@ -42,8 +34,99 @@ struct JSON_DATA
 	JSON_DATA* next;
 };
 
+union json_data_data 
+{
+	long long int	data_integer;
+	long double		data_double;
+	char 			data_char;
+	char*			data_str;
+	bool			data_bool;
+	JSON_DATA		data_list;
+};
+
+struct JSON_MAP
+{
+	json_data_type type;
+	char* key;
+	JSON_DATA* data;
+	JSON_MAP* prev;
+	JSON_MAP* next;
+};
+
 void json_data_destroy_all ( JSON_DATA* data );
 JSON_DATA* json_data_get_last ( JSON_DATA* json_data );
+
+JSON_MAP* json_map_get_last ( JSON_MAP* json_map )
+{
+	JSON_MAP* last = json_map;
+
+	while ( last->next ) last = last->next;
+
+	return last;
+}
+
+void json_map_destroy_all ( JSON_MAP* map )
+{
+	if ( map == NULL ) return;
+
+	JSON_MAP* last = json_map_get_last( map );
+	JSON_MAP* swap = NULL;
+
+	do 	
+	{
+		if ( last->data != NULL )
+		{
+			json_data_destroy( &last->data );
+		}
+
+		swap = last->prev;
+
+		free( last );
+		last = swap;
+	} 
+	while ( last );
+}
+
+void json_map_destroy ( JSON_MAP** map )
+{
+	json_map_destroy_all( *map );
+	
+	map = NULL;
+}
+
+JSON_MAP* json_map_new ()
+{
+	JSON_MAP* map = ( JSON_MAP* ) calloc( 1, sizeof( JSON_MAP ) );
+	return map;
+}
+
+void json_map_add_list( JSON_MAP* map, char* key, JSON_DATA* data )
+{
+	if ( map == NULL ) 
+	{
+		fprintf( stderr, "json_map null pointer exception\n" );
+		exit( 1 );
+	}
+
+	if ( data == NULL ) 
+	{
+		fprintf( stderr, "data null pointer exception\n" );
+		exit( 1 );
+	}
+
+	map->type = json_data_type_list;
+	map->key = key;
+	map->data = data;
+}
+
+void json_map_dump( JSON_MAP* map )
+{
+	char* list = json_data_list_to_string( map->data, true );
+
+	printf( "{\n\t\"%s\": %s\n}\n", map->key, list );
+
+	free( list );
+}
 
 JSON_DATA* json_data_new ()
 {
