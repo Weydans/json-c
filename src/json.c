@@ -4,6 +4,12 @@
 #include <stdbool.h>
 #include "../include/json.h"
 
+#define LINE_BREAK			"\n"
+
+#define	JSON_LIST_OPEN		"["
+#define	JSON_LIST_CLOSE		"]"
+#define	JSON_LIST_SEPARATOR	","
+
 #define JSON_MASK_INTEGER 	"%lld"
 #define JSON_MASK_DOUBLE	"%.10Lf"
 #define JSON_MASK_BOOL		"%s"
@@ -100,6 +106,11 @@ JSON_MAP* json_map_new ()
 	return map;
 }
 
+void json_map_add_int( JSON_MAP* map, char* key, long long int data )
+{
+	printf( "Aqio" );
+}
+
 void json_map_add_list( JSON_MAP* map, char* key, JSON_DATA* data )
 {
 	if ( map == NULL ) 
@@ -121,11 +132,7 @@ void json_map_add_list( JSON_MAP* map, char* key, JSON_DATA* data )
 
 void json_map_dump( JSON_MAP* map )
 {
-	char* list = json_data_list_to_string( map->data, true );
 
-	printf( "{\n\t\"%s\": %s\n}\n", map->key, list );
-
-	free( list );
 }
 
 JSON_DATA* json_data_new ()
@@ -367,85 +374,98 @@ char* json_data_to_string ( JSON_DATA* data )
 
 char* json_data_list_join( JSON_DATA* data, char* separator )
 {
-	JSON_DATA* json_swap = data;
-	int str_old_size = 2;
-	int str_new_size = 0;
-	char* temp_string = NULL;
-	char* str = ( char* ) calloc( str_old_size, sizeof( char ) );
 
-	do
+}
+
+char* json_data_list_to_string ( JSON_DATA* data )
+{
+	JSON_DATA* next_node = data;
+	size_t str_initial_size = strlen( JSON_LIST_OPEN ) + 1;
+	size_t str_current_size = str_initial_size;
+	char* json_data_str = NULL;
+	char* str = ( char* ) calloc( str_initial_size, sizeof( char ) );
+
+	if ( data != NULL )
 	{
-		if ( json_swap != NULL || json_swap->data != NULL)
+		strcpy( str, JSON_LIST_OPEN );
+
+		do
 		{
-			temp_string	 = json_data_to_string( json_swap );
-			str_old_size = strlen( str ) + 1;
-			str_new_size = str_old_size + strlen( temp_string ) + 1;
-			str 		 = realloc( str, str_new_size );
+			json_data_str = json_data_to_string( next_node );
+			str_current_size += strlen( json_data_str );
+			str = realloc( str, str_current_size );
+			strcat( str, json_data_str );
+			free( json_data_str );
 
-			strcat( str, temp_string );
+			next_node = next_node->next;
 
-			if ( json_swap->next != NULL && json_swap->next->data != NULL)
+			if ( next_node != NULL )
 			{
-				str_old_size = strlen( str ) + 1;
-				str_new_size = str_old_size + strlen( separator ) + 1;
-				str = realloc( str, str_new_size );
-				strcat( str, separator );
+				str = realloc( str, str_current_size += strlen( JSON_LIST_SEPARATOR ) );
+				strcat( str, JSON_LIST_SEPARATOR );
 			}
-
-			free( temp_string );
 		}
+		while( next_node );
+
+		str = realloc( str, str_current_size += strlen( JSON_LIST_CLOSE ) );
+		strcat( str, JSON_LIST_CLOSE );
 	}
-	while ( json_swap = json_swap->next );
 
 	return str;
 }
 
-char* json_data_list_to_string ( JSON_DATA* data, bool beautify )
+void json_list_str_concat ( char** str, char* new_part )
 {
-	char* list_joined = NULL;
-	char* list_str = ( char* ) calloc( 2, sizeof( char ) );
+	*str = realloc( *str, strlen( *str ) + strlen( new_part ) + 1 );
+	strcat( *str, new_part );
+}
 
-	strcpy( list_str, "[" );
+char* json_data_list_to_string_beautify ( JSON_DATA* data, char* tabe, size_t context )
+{
+	int i = 0;
+	JSON_DATA* next_node = data;
+	char* json_data_str = NULL;
+	char* str = ( char* ) calloc( strlen( JSON_LIST_OPEN ) + 1, sizeof( char ) );
 
-	if ( beautify )
+	if ( data == NULL ) return str;
+
+	strcpy( str, JSON_LIST_OPEN );
+	json_list_str_concat( &str, LINE_BREAK );
+
+	do
 	{
-		list_str = realloc( list_str, strlen( list_str ) + 1 + strlen( "\n\t" ) + 1 );
-		strcat( list_str, "\n\t" );
+		for ( i = 0; i < context; i++ )	json_list_str_concat( &str, tabe );
+
+		json_data_str = json_data_to_string( next_node );
+		json_list_str_concat( &str, json_data_str );
+		free( json_data_str );
+
+		next_node = next_node->next;
+
+		if ( next_node != NULL )
+		{
+			json_list_str_concat( &str, JSON_LIST_SEPARATOR );
+			json_list_str_concat( &str, LINE_BREAK );
+		}
 	}
+	while( next_node );
 
-	list_joined = json_data_list_join( data, beautify ? ",\n\t" : "," );
-	list_str 	= realloc( list_str, strlen( list_str ) + 1 + strlen( list_joined ) + 1 );
-	
-	strcat( list_str, list_joined );
+	json_list_str_concat( &str, LINE_BREAK );
 
-	if ( beautify )
-	{
-		list_str = realloc( list_str, strlen( list_str ) + 1 + strlen( "\n" ) + 1 );
-		strcat( list_str, "\n" );
-	}
+	for ( i = 1; i < context; i++ )	json_list_str_concat( &str, tabe );
 
-	strcat( list_str, "]" );
+	json_list_str_concat( &str, JSON_LIST_CLOSE );
 
-	free( list_joined );
-
-	return list_str;
+	return str;
 }
 
 void json_data_print ( JSON_DATA* data )
 {
-	char* data_str = json_data_to_string( data );
 
-	printf( "%s\n", data_str );
-	
-	free( data_str );
 }
 
 void json_data_list_dump ( JSON_DATA* data )
 {
-	char* data_str = json_data_list_to_string( data, true );
 
-	printf( "%s\n", data_str );
-	
-	free( data_str );
 }
 

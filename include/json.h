@@ -4,9 +4,12 @@
 typedef struct JSON_DATA JSON_DATA;
 typedef struct JSON_MAP JSON_MAP;
 
+// ============================================
+// JSON_MAP
 JSON_MAP* json_map_new ();
 void json_map_destroy ( JSON_MAP** map );
 
+void json_map_add_int( JSON_MAP* map, char* key, long long int data );
 void json_map_add_list( JSON_MAP* map, char* key, JSON_DATA* data );
 void json_map_dump( JSON_MAP* map );
 
@@ -22,7 +25,8 @@ void json_data_add_str ( JSON_DATA* data, char* data_str );
 void json_data_add_bool ( JSON_DATA* data, bool data_bool );
 
 char* json_data_to_string ( JSON_DATA* data );
-char* json_data_list_to_string ( JSON_DATA* data, bool beautify );
+char* json_data_list_to_string ( JSON_DATA* data );
+char* json_data_list_to_string_beautify ( JSON_DATA* data, char* tabe, size_t context );
 void json_data_print ( JSON_DATA* data );
 void json_data_list_dump ( JSON_DATA* data );
 
