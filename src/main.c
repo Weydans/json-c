@@ -1,37 +1,47 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "../include/json.h"
+#include "../include/json-data.h"
 
 int main ( int argc, char* argv[] )
 {
-	char* str 		= NULL;
-	JSON_MAP* map 	= json_map_new();
-	JSON_DATA* data = json_data_new();
+	char* tmp_str = NULL;
 
-	json_data_add_str( data, "Weydans Barros" );
-	json_data_add_str( data, "Engenheiro de Software" );
-	json_data_add_str( data, "(35) 9 9991-3005" );
-	json_data_add_integer( data, 27 );
-	json_data_add_double( data, 1.70 );
-	json_data_add_char( data, 'A' );
-	json_data_add_bool( data, false );
-	
-	str = json_data_list_to_string( data );
-	puts( str );
-	free( str );
-	
-	str = json_data_list_to_string_beautify( data, "    ", 1 );
-	puts( str );
-	free( str );
-	//json_data_list_dump( data );
+	JSON_DATA* str = json_data_new();
+	json_data_add_str( str, "string simples" );
+	tmp_str = json_data_to_string( str );
+	printf( "%s\n", tmp_str );
+	json_data_destroy( &str );
+	free( tmp_str );
 
-	//json_map_add_list( map, "funcionario", data );
-	//json_map_add_int( map, "idade", 15 );
-	//json_map_dump( map );
-	json_data_destroy( &data );
-	json_map_destroy( &map );
-	
+	JSON_DATA* integer = json_data_new();
+	json_data_add_integer( integer, 16 );
+	tmp_str = json_data_to_string( integer );
+	printf( "%s\n", tmp_str );
+	json_data_destroy( &integer );
+	free( tmp_str );
+
+	JSON_DATA* boolean = json_data_new();
+	json_data_add_bool( boolean, false );
+	tmp_str = json_data_to_string( boolean );
+	printf( "%s\n", tmp_str );
+	json_data_destroy( &boolean );
+	free( tmp_str );
+
+	JSON_DATA* charactere = json_data_new();
+	json_data_add_char( charactere, 'C' );
+	tmp_str = json_data_to_string( charactere );
+	printf( "%s\n", tmp_str );
+	json_data_destroy( &charactere );
+	free( tmp_str );
+
+	JSON_DATA* float_point = json_data_new();
+	json_data_add_double( float_point, 1234567.1234567890 );
+	tmp_str = json_data_to_string( float_point );
+	printf( "%s\n", tmp_str );
+	json_data_destroy( &float_point );
+	free( tmp_str );
+
 	return 0;
 }
 

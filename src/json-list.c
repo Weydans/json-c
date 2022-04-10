@@ -1,14 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
-#include "../include/json.h"
+#include "../include/json-data.h"
 
 #define LINE_BREAK			"\n"
-
-#define	JSON_MAP_OPEN		"{"
-#define	JSON_MAP_CLOSE		"}"
-#define	JSON_MAP_SEPARATOR	","
 
 #define	JSON_LIST_OPEN		"["
 #define	JSON_LIST_CLOSE		"]"
@@ -73,176 +68,6 @@ static char* json_data_str_get_str ( JSON_DATA* data );
 static char* json_data_bool_get_str ( JSON_DATA* data );
 void json_data_fill ( JSON_DATA* json_data, void* data, json_data_type type );
 void json_data_add ( JSON_DATA* json_data, void* data, json_data_type type );
-
-JSON_MAP* json_map_get_last ( JSON_MAP* json_map )
-{
-	JSON_MAP* last = json_map;
-
-	while ( last->next ) last = last->next;
-
-	return last;
-}
-
-void json_map_destroy_all ( JSON_MAP* map )
-{
-	if ( map == NULL ) return;
-
-	JSON_MAP* last = json_map_get_last( map );
-	JSON_MAP* swap = NULL;
-
-	do 	
-	{
-		if ( last->data != NULL )
-		{
-			json_data_destroy( &last->data );
-		}
-
-		swap = last->prev;
-
-		free( last );
-		last = swap;
-	} 
-	while ( last );
-}
-
-void json_map_destroy ( JSON_MAP** map )
-{
-	json_map_destroy_all( *map );
-	
-	map = NULL;
-}
-
-JSON_MAP* json_map_new ()
-{
-	JSON_MAP* map = ( JSON_MAP* ) calloc( 1, sizeof( JSON_MAP ) );
-	return map;
-}
-
-void json_map_add ( JSON_MAP* json_map, char* key, void* data, json_data_type type )
-{
-	if ( json_map == NULL ) json_map = json_map_new();
-
-	if ( json_map->data == NULL )
-	{
-		json_map->type = type;
-		json_map->key  = key;
-		json_map->data = json_data_new();
-		json_data_add( json_map->data, data, type );
-	}
-	else if ( json_map->data != NULL )
-	{
-		JSON_MAP* last   = json_map_get_last( json_map );
-		last->next 		 = json_map_new();
-		last->next->data = json_data_new();
-		last->next->type = type;
-		last->next->prev = last;
-		json_data_add( last->next->data, data, type );
-	}
-}
-
-void json_map_add_int( JSON_MAP* map, char* key, long long int data )
-{
-	json_map_add( map, key, &data, json_data_type_integer );
-	json_data_add_integer( map->data, data );
-}
-
-void json_map_add_char ( JSON_MAP* map, char* key, char data )
-{
-	json_map_add( map, key, &data, json_data_type_char );
-	json_data_add_char( map->data, data );
-}
-
-void json_map_add_list( JSON_MAP* map, char* key, JSON_DATA* data )
-{
-	if ( map == NULL ) 
-	{
-		fprintf( stderr, "json_map null pointer exception\n" );
-		exit( 1 );
-	}
-
-	if ( data == NULL ) 
-	{
-		fprintf( stderr, "data null pointer exception\n" );
-		exit( 1 );
-	}
-
-	map->type = json_data_type_list;
-	map->key = key;
-	map->data = data;
-}
-
-char* json_map_to_string ( JSON_MAP* data )
-{
-	char* buffer = ( char* ) calloc( 1, sizeof( char ) );
-	char* tmp_str = NULL;
-
-	json_str_concat( &buffer, "\"" );
-	json_str_concat( &buffer, data->key );
-	json_str_concat( &buffer, "\":" );
-
-	switch ( data->data->type )
-	{
-		case json_data_type_char:
-			tmp_str = json_data_char_get_str( data->data );
-			break;
-		
-		case json_data_type_integer:
-			tmp_str = json_data_integer_get_str( data->data );
-			break;
-
-		case json_data_type_double:
-			buffer = json_data_double_get_str( data->data );
-			break;
-
-		case json_data_type_str:
-			buffer = json_data_str_get_str( data->data );
-			break;
-
-		case json_data_type_bool:
-			buffer = json_data_bool_get_str( data->data );
-			break;
-	}
-
-	json_str_concat( &buffer, tmp_str );
-	free( tmp_str );
-
-	return buffer;
-}
-
-char* json_map_to_string_beautify ( JSON_MAP* data, char* tabe, size_t context )
-{
-	int i = 0;
-	JSON_MAP* next = data;
-	char* pair = NULL;
-	char* str = ( char* ) calloc( strlen( JSON_MAP_OPEN ) + 1, sizeof( char ) );
-
-	strcpy( str, JSON_MAP_OPEN );
-
-	do 
-	{
-		json_str_concat( &str, LINE_BREAK );
-	
-		for ( i = 0; i < context; i++ ) json_str_concat( &str, tabe );
-
-		pair = json_map_to_string( next );
-		json_str_concat( &str, pair );
-		free( pair );
-		
-		next = next->next;
-
-		if ( next != NULL )
-		{
-			json_str_concat( &str, JSON_MAP_SEPARATOR );
-			json_str_concat( &str, LINE_BREAK );
-		}
-	}
-	while ( next );
-
-	json_str_concat( &str, LINE_BREAK );
-	json_str_concat( &str, JSON_MAP_CLOSE );
-
-	return str;
-}
 
 JSON_DATA* json_data_new ()
 {
@@ -479,11 +304,6 @@ char* json_data_to_string ( JSON_DATA* data )
 	}
 
 	return buffer;
-}
-
-char* json_data_list_join( JSON_DATA* data, char* separator )
-{
-
 }
 
 char* json_data_list_to_string ( JSON_DATA* data )
