@@ -4,31 +4,22 @@
 #include <stdbool.h>
 #include "../include/json-data.h"
 
-#define LINE_BREAK			"\n"
-
-#define	JSON_LIST_OPEN		"["
-#define	JSON_LIST_CLOSE		"]"
-#define	JSON_LIST_SEPARATOR	","
-
 #define JSON_MASK_INTEGER 	"%lld"
 #define JSON_MASK_DOUBLE	"%.10Lf"
 #define JSON_MASK_BOOL		"%s"
 #define JSON_MASK_CHAR 		"\"%c\""
 #define JSON_MASK_STR 		"\"%s\""
-
 #define JSON_DATA_TRUE 		"true"
 #define JSON_DATA_FALSE		"false"
 
 typedef union json_data_value json_data_value;
 
-struct JSON_DATA 
-{
+struct JSON_DATA {
 	json_data_type type;
 	json_data_value* value;
 };
 
-union json_data_value 
-{
+union json_data_value {
 	long long int	data_integer;
 	long double		data_double;
 	char 			data_char;
@@ -53,8 +44,7 @@ JSON_DATA* json_data_new () {
 
 static void json_data_add ( JSON_DATA* data, void* value, json_data_type type ) {
 	data->type = type;
-	switch ( type )
-	{
+	switch ( type )	{
 		case json_data_type_char:
 			data->value->data_char = *( ( char* ) value );
 			break;
@@ -136,8 +126,7 @@ static char* json_data_bool_get_str ( JSON_DATA* data ) {
 
 char* json_data_to_string ( JSON_DATA* data ) {
 	char* buffer = NULL;
-	switch ( data->type )
-	{
+	switch ( data->type ) {
 		case json_data_type_char:
 			buffer = json_data_char_get_str( data );
 			break;

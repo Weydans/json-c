@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "../include/json-data.h"
+#include "../include/json-list.h"
 
 int main ( int argc, char* argv[] )
 {
@@ -42,6 +43,27 @@ int main ( int argc, char* argv[] )
 	json_data_destroy( &float_point );
 	free( tmp_str );
 
+	JSON_DATA* azul = json_data_new();
+	json_data_add_str( azul, "Azul" );
+	JSON_DATA* amarelo = json_data_new();
+	json_data_add_str( amarelo, "Amarelo" );
+	JSON_DATA* preto = json_data_new();
+	json_data_add_str( preto, "Preto" );
+	JSON_DATA* verde = json_data_new();
+	json_data_add_str( verde, "Verde" );
+	JSON_LIST* list = json_list_new();
+	json_list_add( list, azul );
+	json_list_add( list, amarelo );
+	json_list_add( list, preto );
+	json_list_add( list, verde );
+
+	tmp_str = json_list_to_string( list );
+	puts( tmp_str );
+	free( tmp_str );
+
+	json_list_dump( list );
+
+	json_list_destroy( &list );
 	return 0;
 }
 

@@ -1,21 +1,13 @@
-#ifndef _JSON_DATA_H_
-#define _JSON_DATA_H_
+#ifndef _JSON_LIST_H_
+#define _JSON_LIST_H_
 
-typedef struct JSON_DATA JSON_DATA;
+typedef struct JSON_LIST JSON_LIST;
 
-JSON_DATA* json_data_new ();
-void json_data_destroy ( JSON_DATA** data );
-
-void json_data_add_char ( JSON_DATA* data, char charactere );
-void json_data_add_integer ( JSON_DATA* data, long long int data_integer );
-void json_data_add_double ( JSON_DATA* data, long double data_double );
-void json_data_add_str ( JSON_DATA* data, char* data_str );
-void json_data_add_bool ( JSON_DATA* data, bool data_bool );
-
-char* json_data_to_string ( JSON_DATA* data );
-char* json_data_list_to_string ( JSON_DATA* data );
-char* json_data_list_to_string_beautify ( JSON_DATA* data, char* tabe, size_t context );
-void json_data_print ( JSON_DATA* data );
-void json_data_list_dump ( JSON_DATA* data );
+JSON_LIST* json_list_new ();
+void json_list_destroy ( JSON_LIST** list );
+void json_list_add( JSON_LIST* list, JSON_DATA* data );
+char* json_list_to_string ( JSON_LIST* list );
+char* json_list_to_string_beautify ( JSON_LIST* list, char* tabe, size_t context );
+void json_list_dump ( JSON_LIST* list );
 
 #endif
