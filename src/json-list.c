@@ -54,35 +54,28 @@ JSON_LIST* json_list_get_last ( JSON_LIST* list ) {
 	return last;
 }
 
+void json_str_concat ( char** str, char* new_part ) {
+	*str = realloc( *str, strlen( *str ) + strlen( new_part ) + 1 );
+	strcat( *str, new_part );
+}
+
 char* json_list_to_string ( JSON_LIST* list ) {
 	JSON_LIST* next_node = list;
 	size_t str_initial_size = strlen( JSON_LIST_OPEN ) + 1;
-	size_t str_current_size = str_initial_size;
 	char* json_data_str = NULL;
 	char* str = ( char* ) calloc( str_initial_size, sizeof( char ) );
 	if ( list != NULL ) {
 		strcpy( str, JSON_LIST_OPEN );
 		do {
 			json_data_str = json_data_to_string( next_node->data );
-			str_current_size += strlen( json_data_str );
-			str = realloc( str, str_current_size );
-			strcat( str, json_data_str );
+			json_str_concat( &str, json_data_str );
 			free( json_data_str );
 			next_node = next_node->next;
-			if ( next_node != NULL ) {
-				str = realloc( str, str_current_size += strlen( JSON_LIST_SEPARATOR ) );
-				strcat( str, JSON_LIST_SEPARATOR );
-			}
+			if ( next_node != NULL ) json_str_concat( &str, JSON_LIST_SEPARATOR );
 		} while( next_node );
-		str = realloc( str, str_current_size += strlen( JSON_LIST_CLOSE ) );
-		strcat( str, JSON_LIST_CLOSE );
+		json_str_concat( &str, JSON_LIST_CLOSE );
 	}
 	return str;
-}
-
-void json_str_concat ( char** str, char* new_part ) {
-	*str = realloc( *str, strlen( *str ) + strlen( new_part ) + 1 );
-	strcat( *str, new_part );
 }
 
 char* json_list_to_string_beautify ( JSON_LIST* data, char* tabe, size_t context ) {

@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "../include/json-data.h"
 #include "../include/json-list.h"
+#include "../include/json-object.h"
 
 int main ( int argc, char* argv[] )
 {
@@ -62,8 +63,15 @@ int main ( int argc, char* argv[] )
 	free( tmp_str );
 
 	json_list_dump( list );
-
 	json_list_destroy( &list );
+
+	JSON_OBJECT* nome = json_object_new();
+	json_object_add_str( nome, "nome", "Pablo Dall'Oglio" );
+	tmp_str = json_object_to_string( nome );
+	puts( tmp_str );
+	free( tmp_str );
+	json_object_destroy( &nome );
+
 	return 0;
 }
 

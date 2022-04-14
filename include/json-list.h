@@ -1,6 +1,8 @@
 #ifndef _JSON_LIST_H_
 #define _JSON_LIST_H_
 
+#include "../include/json-data.h"
+
 typedef struct JSON_LIST JSON_LIST;
 
 JSON_LIST* json_list_new ();

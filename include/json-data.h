@@ -1,6 +1,8 @@
 #ifndef _JSON_DATA_H_
 #define _JSON_DATA_H_
 
+#include <stdbool.h>
+
 typedef struct JSON_DATA JSON_DATA;
 typedef enum json_data_type json_data_type; 
 
@@ -11,7 +13,8 @@ enum json_data_type
 	json_data_type_str,
 	json_data_type_bool,
 	json_data_type_double,
-	json_data_type_list
+	json_data_type_list,
+	json_data_type_object
 };
 
 JSON_DATA* json_data_new ();
@@ -22,5 +25,6 @@ void json_data_add_char ( JSON_DATA* data, char value );
 void json_data_add_integer ( JSON_DATA* data, long long int value );
 void json_data_add_double ( JSON_DATA* data, long double data_double );
 char* json_data_to_string ( JSON_DATA* data );
+json_data_type json_data_get_type ( JSON_DATA* data );
 
 #endif
