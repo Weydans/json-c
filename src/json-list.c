@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "../include/json-data.h"
 #include "../include/json-list.h"
 
 #define LINE_BREAK			"\n"
@@ -34,18 +33,6 @@ void json_list_add( JSON_LIST* list, JSON_DATA* data ) {
 	last->next = new_list;
 	new_list->prev = last;
 	new_list->data = data;
-}
-
-void json_list_destroy ( JSON_LIST** list ) {
-	if ( list == NULL ) return;
-	JSON_LIST* last = json_list_get_last( *list );
-	JSON_LIST* swap = NULL;
-	do {
-		if ( last->data != NULL ) json_data_destroy( &last->data );
-		swap = last->prev;
-		free( last );
-		last = swap;
-	} while ( last );
 }
 
 JSON_LIST* json_list_get_last ( JSON_LIST* list ) {
@@ -113,5 +100,17 @@ void json_list_dump ( JSON_LIST* list ) {
 	char* str = json_list_to_string_beautify( list, "    ", 1 );
 	puts( str );
 	free( str );
+}
+
+void json_list_destroy ( JSON_LIST** list ) {
+	if ( list == NULL ) return;
+	JSON_LIST* last = json_list_get_last( *list );
+	JSON_LIST* swap = NULL;
+	do {
+		if ( last->data != NULL ) json_data_destroy( &last->data );
+		swap = last->prev;
+		free( last );
+		last = swap;
+	} while ( last );
 }
 

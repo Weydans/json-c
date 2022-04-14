@@ -155,16 +155,18 @@ json_data_type json_data_get_type ( JSON_DATA* data ) {
 	return data->type;
 }
 
-void json_data_destroy ( JSON_DATA** data )
-{
+void json_data_destroy ( JSON_DATA** data ) {
 	if ( *data == NULL ) return;
 	if ( ( *data )->value != NULL ) {
-		if ( json_data_get_type( *data ) == json_data_type_list ) { 
-			json_list_destroy( ( JSON_LIST** ) &( *data )->value );
-		} else if ( json_data_get_type( *data ) == json_data_type_object ) { 
-			json_object_destroy( ( JSON_OBJECT** ) &( *data )->value );
-		} else {
-			free( ( *data )->value );
+		switch ( json_data_get_type( *data ) ) {
+			case json_data_type_list:
+				json_list_destroy( ( JSON_LIST** ) &( *data )->value );
+				break;
+			case json_data_type_object:
+				json_object_destroy( ( JSON_OBJECT** ) &( *data )->value );
+				break;
+			default:		
+				free( ( *data )->value );
 		}
 	}
 	free( *data );
