@@ -46,9 +46,27 @@ void json_object_add_str ( JSON_OBJECT* obj, char* key, char* value ) {
 	json_object_add( obj, key, data );
 }
 
+void json_object_add_char ( JSON_OBJECT* obj, char* key, char value ) {
+	JSON_DATA* data = json_data_new();
+	json_data_add_char( data, value );
+	json_object_add( obj, key, data );
+}
+
+void json_object_add_bool ( JSON_OBJECT* obj, char* key, bool value ) {
+	JSON_DATA* data = json_data_new();
+	json_data_add_bool( data, value );
+	json_object_add( obj, key, data );
+}
+
 void json_object_add_integer ( JSON_OBJECT* obj, char* key, long long int value ) {
 	JSON_DATA* data = json_data_new();
 	json_data_add_integer( data, value );
+	json_object_add( obj, key, data );
+}
+
+void json_object_add_double ( JSON_OBJECT* obj, char* key, long double value ) {
+	JSON_DATA* data = json_data_new();
+	json_data_add_double( data, value );
 	json_object_add( obj, key, data );
 }
 

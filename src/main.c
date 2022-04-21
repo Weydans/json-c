@@ -68,6 +68,9 @@ int main ( int argc, char* argv[] ) {
 	json_object_add_str( livro, "titulo", "Programando com orientação a objetos" );
 	json_object_add_str( livro, "autor", "Pablo Dall'Oglio" );
 	json_object_add_integer( livro, "num_paginas", 550 );
+	json_object_add_double( livro, "valor", 119.90 );
+	json_object_add_char( livro, "classificacao", 'A' );
+	json_object_add_bool( livro, "disponivel_para_venda", true );
 	tmp_str = json_object_to_string( livro );
 	puts( tmp_str );
 	free( tmp_str );
