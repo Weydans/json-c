@@ -112,6 +112,7 @@ char* json_object_to_string_beautify ( JSON_OBJECT* obj, char* tabe, size_t cont
 	do {
 		for ( i = 0; i < context; i++ )	json_str_object_concat( &str, tabe );
 		json_object_stringify_key( next_node, &str );
+		json_str_object_concat( &str, " " );
 		json_obj_str = json_data_to_string( next_node->data );
 		json_str_object_concat( &str, json_obj_str );
 		free( json_obj_str );
