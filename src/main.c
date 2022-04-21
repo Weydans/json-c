@@ -11,51 +11,69 @@ int main ( int argc, char* argv[] ) {
 	JSON_DATA* str = json_data_new();
 	json_data_add_str( str, "string simples" );
 	tmp_str = json_data_to_string( str );
-	printf( "%s\n", tmp_str );
+	puts( tmp_str );
 	json_data_destroy( &str );
 	free( tmp_str );
 
 	JSON_DATA* integer = json_data_new();
 	json_data_add_integer( integer, 16 );
 	tmp_str = json_data_to_string( integer );
-	printf( "%s\n", tmp_str );
+	puts( tmp_str );
 	json_data_destroy( &integer );
 	free( tmp_str );
 
 	JSON_DATA* boolean = json_data_new();
 	json_data_add_bool( boolean, false );
 	tmp_str = json_data_to_string( boolean );
-	printf( "%s\n", tmp_str );
+	puts( tmp_str );
 	json_data_destroy( &boolean );
 	free( tmp_str );
 
 	JSON_DATA* charactere = json_data_new();
 	json_data_add_char( charactere, 'C' );
 	tmp_str = json_data_to_string( charactere );
-	printf( "%s\n", tmp_str );
+	puts( tmp_str );
 	json_data_destroy( &charactere );
 	free( tmp_str );
 
 	JSON_DATA* float_point = json_data_new();
 	json_data_add_double( float_point, 1234567.1234567890 );
 	tmp_str = json_data_to_string( float_point );
-	printf( "%s\n", tmp_str );
+	puts( tmp_str );
 	json_data_destroy( &float_point );
 	free( tmp_str );
 
-	JSON_DATA* azul = json_data_new();
-	json_data_add_str( azul, "Azul" );
-	JSON_DATA* amarelo = json_data_new();
-	json_data_add_str( amarelo, "Amarelo" );
-	JSON_DATA* preto = json_data_new();
-	json_data_add_str( preto, "Preto" );
-	JSON_DATA* verde = json_data_new();
-	json_data_add_str( verde, "Verde" );
+	JSON_DATA* cadeia_de_caracteres = json_data_new();
+	json_data_add_str( cadeia_de_caracteres, "Linguagem C" );
+	JSON_DATA* numero_inteiro = json_data_new();
+	json_data_add_integer( numero_inteiro, 1988456 );
+	JSON_DATA* numero_decimal = json_data_new();
+	json_data_add_double( numero_decimal, 3.142596 );
+	charactere = json_data_new();
+	json_data_add_char( charactere, 'W' );
+	JSON_DATA* boleano = json_data_new();
+	json_data_add_bool( boleano, false );
+
 	JSON_LIST* list = json_list_new();
-	json_list_add( list, azul );
-	json_list_add( list, amarelo );
-	json_list_add( list, preto );
-	json_list_add( list, verde );
+	json_list_add( list, cadeia_de_caracteres );
+	json_list_add( list, numero_inteiro );
+	json_list_add( list, numero_decimal );
+	json_list_add( list, charactere );
+	json_list_add( list, boleano );
+
+	tmp_str = json_list_to_string( list );
+	puts( tmp_str );
+	free( tmp_str );
+
+	json_list_dump( list );
+	json_list_destroy( &list );
+
+	list = json_list_new();
+	json_list_add_str( list, "Rodrigo Mello" );
+	json_list_add_integer( list, 10 );
+	json_list_add_double( list, 3.141596 );
+	json_list_add_char( list, 'A' );
+	json_list_add_bool( list, true );
 
 	tmp_str = json_list_to_string( list );
 	puts( tmp_str );
@@ -71,6 +89,7 @@ int main ( int argc, char* argv[] ) {
 	json_object_add_double( livro, "valor", 119.90 );
 	json_object_add_char( livro, "classificacao", 'A' );
 	json_object_add_bool( livro, "disponivel_para_venda", true );
+	
 	tmp_str = json_object_to_string( livro );
 	puts( tmp_str );
 	free( tmp_str );

@@ -35,6 +35,36 @@ void json_list_add( JSON_LIST* list, JSON_DATA* data ) {
 	new_list->data = data;
 }
 
+void json_list_add_str ( JSON_LIST* list, char* value ) {
+	JSON_DATA* data = json_data_new();
+	json_data_add_str( data, value );
+	json_list_add( list, data );
+}
+
+void json_list_add_char ( JSON_LIST* list, char value ) {
+	JSON_DATA* data = json_data_new();
+	json_data_add_char( data, value );
+	json_list_add( list, data );
+}
+
+void json_list_add_bool ( JSON_LIST* list, bool value ) {
+	JSON_DATA* data = json_data_new();
+	json_data_add_bool( data, value );
+	json_list_add( list, data );
+}
+
+void json_list_add_integer ( JSON_LIST* list, long long int value ) {
+	JSON_DATA* data = json_data_new();
+	json_data_add_integer( data, value );
+	json_list_add( list, data );
+}
+
+void json_list_add_double ( JSON_LIST* list, long double value ) {
+	JSON_DATA* data = json_data_new();
+	json_data_add_double( data, value );
+	json_list_add( list, data );
+}
+
 JSON_LIST* json_list_get_last ( JSON_LIST* list ) {
 	JSON_LIST* last = list;
 	while ( last->next ) last = last->next;
