@@ -5,8 +5,7 @@
 #include "../include/json-list.h"
 #include "../include/json-object.h"
 
-int main ( int argc, char* argv[] )
-{
+int main ( int argc, char* argv[] ) {
 	char* tmp_str = NULL;
 
 	JSON_DATA* str = json_data_new();
@@ -65,12 +64,19 @@ int main ( int argc, char* argv[] )
 	json_list_dump( list );
 	json_list_destroy( &list );
 
-	JSON_OBJECT* nome = json_object_new();
-	json_object_add_str( nome, "nome", "Pablo Dall'Oglio" );
-	tmp_str = json_object_to_string( nome );
+	JSON_OBJECT* livro = json_object_new();
+	json_object_add_str( livro, "titulo", "Programando com orientação a objetos" );
+	json_object_add_str( livro, "autor", "Pablo Dall'Oglio" );
+	json_object_add_integer( livro, "num_paginas", 550 );
+	tmp_str = json_object_to_string( livro );
 	puts( tmp_str );
 	free( tmp_str );
-	json_object_destroy( &nome );
+	
+	tmp_str = json_object_to_string_beautify( livro, "    ", 1 );
+	puts( tmp_str );
+	free( tmp_str );
+	
+	json_object_destroy( &livro );
 
 	return 0;
 }
