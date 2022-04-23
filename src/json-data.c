@@ -40,6 +40,10 @@ static char* json_data_bool_get_str ( JSON_DATA* data );
 JSON_DATA* json_data_new () {
 	JSON_DATA* data = ( JSON_DATA* ) calloc( 1, sizeof( JSON_DATA ) );
 	data->value = ( json_data_value* ) calloc( 1, sizeof( json_data_value ) );
+	if ( data == NULL || data->value == NULL ) {
+		fprintf( stderr, "%s:%u: Memmory allocation fail\n", __FILE__, __LINE__ );
+		exit( -1 );
+	}
 	return data; 
 }
 
