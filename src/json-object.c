@@ -23,6 +23,10 @@ void json_object_stringify_key ( JSON_OBJECT* obj, char** str );
 
 JSON_OBJECT* json_object_new () {
 	JSON_OBJECT* obj = ( JSON_OBJECT* ) calloc( 1, sizeof( JSON_OBJECT ) );
+	if ( obj == NULL ) {
+		fprintf( stderr, "%s:%u: Memmory allocation fail\n", __FILE__, __LINE__ );
+		exit( -1 );
+	}
 	return obj;
 }
 
