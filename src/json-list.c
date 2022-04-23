@@ -71,6 +71,10 @@ void json_list_add_double ( JSON_LIST* list, long double value ) {
 }
 
 JSON_LIST* json_list_get_last ( JSON_LIST* list ) {
+	if ( list == NULL ) {
+		fprintf( stderr, "%s:%u: Null pointer at json_list_get_last\n", __FILE__, __LINE__ );
+		exit( -1 );
+	}
 	JSON_LIST* last = list;
 	while ( last->next ) last = last->next;
 	return last;
