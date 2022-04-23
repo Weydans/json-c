@@ -82,6 +82,14 @@ int main ( int argc, char* argv[] ) {
 	json_list_dump( list );
 	json_list_destroy( &list );
 
+	JSON_LIST* datas_lancamento = json_list_new();
+	json_list_add_integer( datas_lancamento, 2004 );
+	json_list_add_integer( datas_lancamento, 2008 );
+	json_list_add_integer( datas_lancamento, 2015 );
+	tmp_str = json_list_to_string( datas_lancamento );
+	puts( tmp_str );
+	free( tmp_str );
+	
 	JSON_OBJECT* livro = json_object_new();
 	json_object_add_str( livro, "titulo", "Programando com orientação a objetos" );
 	json_object_add_str( livro, "autor", "Pablo Dall'Oglio" );
@@ -89,6 +97,7 @@ int main ( int argc, char* argv[] ) {
 	json_object_add_double( livro, "valor", 119.90 );
 	json_object_add_char( livro, "classificacao", 'A' );
 	json_object_add_bool( livro, "disponivel_para_venda", true );
+	json_object_add_list( livro, "datas_lancamento", datas_lancamento );
 	
 	tmp_str = json_object_to_string( livro );
 	puts( tmp_str );
@@ -98,6 +107,7 @@ int main ( int argc, char* argv[] ) {
 	puts( tmp_str );
 	free( tmp_str );
 	
+	json_list_destroy( &datas_lancamento );
 	json_object_destroy( &livro );
 
 	return 0;

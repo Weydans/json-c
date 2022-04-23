@@ -74,6 +74,12 @@ void json_object_add_double ( JSON_OBJECT* obj, char* key, long double value ) {
 	json_object_add( obj, key, data );
 }
 
+void json_object_add_list ( JSON_OBJECT* obj, char* key, JSON_LIST* list ) {
+	JSON_DATA* data = json_data_new();
+	json_data_add_list( data, list );
+	json_object_add( obj, key, data );
+}
+
 void json_str_object_concat ( char** str, char* new_part ) {
 	*str = realloc( *str, strlen( *str ) + strlen( new_part ) + 1 );
 	strcat( *str, new_part );
@@ -94,7 +100,11 @@ char* json_object_to_string ( JSON_OBJECT* obj ) {
 		strcpy( str, JSON_OBJECT_OPEN );
 		do {
 			json_object_stringify_key( next_node, &str );
-			json_data_str = json_data_to_string( next_node->data );
+			if ( json_data_get_type( next_node->data ) == json_data_type_list ) {
+				json_data_str = json_list_to_string( json_data_get_list( next_node->data ) );
+			} else {
+				json_data_str = json_data_to_string( next_node->data );
+			}
 			json_str_object_concat( &str, json_data_str );
 			free( json_data_str );
 			next_node = next_node->next;
@@ -117,7 +127,11 @@ char* json_object_to_string_beautify ( JSON_OBJECT* obj, char* tabe, size_t cont
 		for ( i = 0; i < context; i++ )	json_str_object_concat( &str, tabe );
 		json_object_stringify_key( next_node, &str );
 		json_str_object_concat( &str, " " );
-		json_obj_str = json_data_to_string( next_node->data );
+		if ( json_data_get_type( next_node->data ) == json_data_type_list ) {
+			json_obj_str = json_list_to_string_beautify( json_data_get_list( next_node->data ), tabe, ( context + 1 ) );
+		} else {
+			json_obj_str = json_data_to_string( next_node->data );
+		}
 		json_str_object_concat( &str, json_obj_str );
 		free( json_obj_str );
 		next_node = next_node->next;

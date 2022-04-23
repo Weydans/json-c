@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "../include/json-data.h"
 #include "../include/json-list.h"
 
 #define LINE_BREAK			"\n"
