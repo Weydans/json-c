@@ -1,9 +1,8 @@
 #ifndef _JSON_LIST_H_
 #define _JSON_LIST_H_
 
-#include "../include/json-data.h"
-
-typedef struct JSON_LIST JSON_LIST;
+#include <stdbool.h>
+#include "json.h"
 
 JSON_LIST* json_list_new ();
 void json_list_add( JSON_LIST* list, JSON_DATA* data );
