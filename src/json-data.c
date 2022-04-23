@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/json-list.h"
-#include "../include/json-object.h"
 #include "../include/json-data.h"
 
 #define JSON_MASK_INTEGER 	"%lld"
@@ -65,6 +63,9 @@ static void json_data_add ( JSON_DATA* data, void* value, json_data_type type ) 
 		case json_data_type_bool:
 			data->value->data_bool = *( ( bool* ) value );
 			break;
+		case json_data_type_list:
+			data->value->data_list = ( JSON_LIST* ) value;
+			break;
 	}	
 }
 
@@ -86,6 +87,10 @@ void json_data_add_char ( JSON_DATA* data, char value ) {
 
 void json_data_add_double ( JSON_DATA* data, long double value ) {
 	json_data_add( data, &value, json_data_type_double );
+}
+
+void json_data_add_list ( JSON_DATA* data, JSON_LIST* list ) {
+	json_data_add( data, list, json_data_type_list );
 }
 
 static char* json_data_char_get_str ( JSON_DATA* data ) {
@@ -157,6 +162,14 @@ json_data_type json_data_get_type ( JSON_DATA* data ) {
 		exit( 1 );
 	}
 	return data->type;
+}
+
+JSON_LIST* json_data_get_list ( JSON_DATA* data ) {
+	if ( data == NULL ) {
+		fprintf( stderr, "json_data_get_type null pointer exception\n" );
+		exit( 1 );
+	}
+	return data->value->data_list;
 }
 
 void json_data_destroy ( JSON_DATA** data ) {
