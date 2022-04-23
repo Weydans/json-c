@@ -20,6 +20,10 @@ void json_str_concat ( char** str, char* new_part );
 
 JSON_LIST* json_list_new () {
 	JSON_LIST* list = ( JSON_LIST* ) calloc( 1, sizeof( JSON_LIST ) );
+	if ( list == NULL ) {
+		fprintf( stderr, "%s:%u: Memmory allocation fail\n", __FILE__, __LINE__ );
+		exit( -1 );
+	}
 	return list;
 }
 
