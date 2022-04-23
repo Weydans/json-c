@@ -20,6 +20,8 @@ struct JSON_OBJECT {
 JSON_OBJECT* json_object_get_last ( JSON_OBJECT* object );
 void json_object_add ( JSON_OBJECT* obj, char* key, JSON_DATA* data );
 void json_object_stringify_key ( JSON_OBJECT* obj, char** str );
+char* json_object_node_to_string ( JSON_OBJECT* node, char* tabe, size_t context );
+char* json_object_node_data_to_string ( JSON_OBJECT* node, char* tabe, size_t context );
 
 JSON_OBJECT* json_object_new () {
 	JSON_OBJECT* obj = ( JSON_OBJECT* ) calloc( 1, sizeof( JSON_OBJECT ) );
@@ -91,55 +93,103 @@ void json_object_stringify_key ( JSON_OBJECT* obj, char** str ) {
 	json_str_object_concat( str, "\":" );
 }
 
-char* json_object_to_string ( JSON_OBJECT* obj ) {
-	JSON_OBJECT* next_node = obj;
-	size_t str_initial_size = strlen( JSON_OBJECT_OPEN ) + 1;
-	char* json_data_str = NULL;
-	char* str = ( char* ) calloc( str_initial_size, sizeof( char ) );
-	if ( obj != NULL ) {
-		strcpy( str, JSON_OBJECT_OPEN );
-		do {
-			json_object_stringify_key( next_node, &str );
-			if ( json_data_get_type( next_node->data ) == json_data_type_list ) {
-				json_data_str = json_list_to_string( json_data_get_list( next_node->data ) );
-			} else {
-				json_data_str = json_data_to_string( next_node->data );
-			}
-			json_str_object_concat( &str, json_data_str );
-			free( json_data_str );
-			next_node = next_node->next;
-			if ( next_node != NULL ) json_str_object_concat( &str, JSON_OBJECT_SEPARATOR );
-		} while ( next_node );
-		json_str_object_concat( &str, JSON_OBJECT_CLOSE );
+char* json_object_node_data_to_string ( JSON_OBJECT* node, char* tabe, size_t context ) {
+	char* str = NULL;
+	JSON_LIST* list = NULL;
+	if ( node == NULL ) {
+		fprintf( stderr, "%s:%u: Null pointer at json_object_node_to_string\n", __FILE__, __LINE__ );
+		exit( -1 );
+	}
+	if ( json_data_get_type( node->data ) == json_data_type_list ) {
+		list = json_data_get_list( node->data );
+		if ( list == NULL ) {
+			fprintf( stderr, "%s:%u: Null pointer at json_object_to_string_beautify\n", __FILE__, __LINE__ );
+			exit( -1 );
+		}
+		if ( tabe != NULL )
+			str = json_list_to_string_beautify( list, tabe, ( context + 1 ) );
+		else
+			str = json_list_to_string( list );
+	} else {
+		str = json_data_to_string( node->data );
 	}
 	return str;
 }
 
+char* json_object_node_to_string ( JSON_OBJECT* node, char* tabe, size_t context ) {
+	int i;
+	char* str = NULL;
+	char* tmp_str = NULL;
+	JSON_LIST* list = NULL;
+	if ( node == NULL ) {
+		fprintf( stderr, "%s:%u: Null pointer at json_object_node_to_string\n", __FILE__, __LINE__ );
+		exit( -1 );
+	}
+	str = ( char* ) calloc( 1, sizeof( char ) );
+	if ( str == NULL ) {
+		fprintf( stderr, "%s:%u: Memory allocation fail at json_object_to_string_beautify\n", __FILE__, __LINE__ );
+		exit( -1 );
+	}
+	for ( i = 0; i < context; i++ )	json_str_object_concat( &str, tabe );
+	json_object_stringify_key( node, &str );
+	if ( tabe != NULL ) json_str_object_concat( &str, " " );
+	tmp_str = json_object_node_data_to_string( node, tabe, context );
+	json_str_object_concat( &str, tmp_str );
+	free( tmp_str );
+	if ( node->next != NULL && tabe != NULL ) {
+		json_str_object_concat( &str, JSON_OBJECT_SEPARATOR );
+		json_str_object_concat( &str, LINE_BREAK );
+	}
+	return str;
+}
+
+char* json_object_to_string ( JSON_OBJECT* obj ) {
+	char* str = NULL;
+	char* tmp_str = NULL;
+	JSON_OBJECT* node = obj;
+	if ( obj == NULL ) {
+		fprintf( stderr, "%s:%u: Null pointer at json_object_to_string\n", __FILE__, __LINE__ );
+		exit( -1 );
+	}
+	str = ( char* ) calloc( strlen( JSON_OBJECT_OPEN ) + 1, sizeof( char ) );
+	if ( str == NULL ) {
+		fprintf( stderr, "%s:%u: Memory allocation fail at json_object_to_string\n", __FILE__, __LINE__ );
+		exit( -1 );
+	}
+	strcpy( str, JSON_OBJECT_OPEN );
+	do {
+		tmp_str = json_object_node_to_string( node, NULL, 0 );
+		json_str_object_concat( &str, tmp_str );
+		free( tmp_str );
+		node = node->next;
+		if ( node != NULL ) json_str_object_concat( &str, JSON_OBJECT_SEPARATOR );
+	} while ( node );
+	json_str_object_concat( &str, JSON_OBJECT_CLOSE );
+	return str;
+}
+
 char* json_object_to_string_beautify ( JSON_OBJECT* obj, char* tabe, size_t context ) {
-	int i = 0;
-	JSON_OBJECT* next_node = obj;
-	char* json_obj_str = NULL;
-	char* str = ( char* ) calloc( strlen( JSON_OBJECT_OPEN ) + 1, sizeof( char ) );
-	if ( obj == NULL ) return str;
+	int i;
+	char* str = NULL;
+	char* tmp_str = NULL;
+	JSON_OBJECT* node = obj;
+	if ( obj == NULL ) {
+		fprintf( stderr, "%s:%u: Null pointer at json_object_to_string_beautify\n", __FILE__, __LINE__ );
+		exit( -1 );
+	}
+	str = ( char* ) calloc( strlen( JSON_OBJECT_OPEN ) + 1, sizeof( char ) );
+	if ( str == NULL ) {
+		fprintf( stderr, "%s:%u: Memory allocation fail at json_object_to_string_beautify\n", __FILE__, __LINE__ );
+		exit( -1 );
+	}
 	strcpy( str, JSON_OBJECT_OPEN );
 	json_str_object_concat( &str, LINE_BREAK );
 	do {
-		for ( i = 0; i < context; i++ )	json_str_object_concat( &str, tabe );
-		json_object_stringify_key( next_node, &str );
-		json_str_object_concat( &str, " " );
-		if ( json_data_get_type( next_node->data ) == json_data_type_list ) {
-			json_obj_str = json_list_to_string_beautify( json_data_get_list( next_node->data ), tabe, ( context + 1 ) );
-		} else {
-			json_obj_str = json_data_to_string( next_node->data );
-		}
-		json_str_object_concat( &str, json_obj_str );
-		free( json_obj_str );
-		next_node = next_node->next;
-		if ( next_node != NULL ) {
-			json_str_object_concat( &str, JSON_OBJECT_SEPARATOR );
-			json_str_object_concat( &str, LINE_BREAK );
-		}
-	} while( next_node );
+		tmp_str = json_object_node_to_string( node, tabe, context );
+		json_str_object_concat( &str, tmp_str );
+		free( tmp_str );
+		node = node->next;
+	} while ( node );
 	json_str_object_concat( &str, LINE_BREAK );
 	for ( i = 1; i < context; i++ )	json_str_object_concat( &str, tabe );
 	json_str_object_concat( &str, JSON_OBJECT_CLOSE );
