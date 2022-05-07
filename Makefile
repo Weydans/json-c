@@ -26,4 +26,3 @@ clean:
 
 $(OBJ)/%.o: $(SRC)/%.c $(INC)/%.h
 	$(CC) -c $< -I $(INC) -o $@
-
